@@ -1,10 +1,14 @@
 # SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 # Copyright 2021 Variscite Ltd.
 
-FROM ubuntu:16.04
-MAINTAINER Nate Drude "nate.d@variscite.com"
+
+FROM jenkins/jenkins:lts-jdk11
+USER root
+
+MAINTAINER Nate Drude "roger.gu@thermofisher.com"
 
 RUN apt-get update
+RUN apt-get apt-get install -y ruby make more-thing-here
 RUN apt-get install -y sudo openssl apt-utils
 
 WORKDIR /workdir
@@ -42,33 +46,33 @@ RUN apt-get update && apt-get install -y \
      iproute2
 
 # B2Qt
-RUN apt-get update && apt-get install -y \
-     gawk curl git-core diffstat unzip p7zip gcc-multilib g++-multilib \
-     build-essential chrpath libsdl1.2-dev xterm gperf bison texinfo rename
-
-# B2Qt git-lfs
-RUN apt-get install -y git-lfs || \
-     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && apt-get install -y git-lfs
-
-# Debian
-RUN apt-get update && apt-get install -y \
-     binfmt-support qemu qemu-user-static debootstrap kpartx \
-     lvm2 dosfstools gpart binutils bison git lib32ncurses5-dev libssl-dev gawk wget \
-     git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat libsdl1.2-dev \
-     autoconf libtool libglib2.0-dev libarchive-dev xterm sed cvs subversion \
-     kmod coreutils texi2html bc docbook-utils python-pysqlite2 help2man make gcc g++ \
-     desktop-file-utils libgl1-mesa-dev libglu1-mesa-dev mercurial automake groff curl \
-     lzop asciidoc u-boot-tools mtd-utils device-tree-compiler flex \
-     rsync
-
-# Android
-RUN apt-get update && apt-get install -y \
-     gnupg flex bison gperf build-essential zip gcc-multilib g++-multilib \
-     libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev libz-dev libssl-dev \
-     libgl1-mesa-dev libxml2-utils xsltproc unzip bc \
-     uuid uuid-dev zlib1g-dev liblz-dev liblzo2-2 liblzo2-dev lzop git curl \
-     u-boot-tools mtd-utils android-tools-fsutils device-tree-compiler gdisk m4 \
-     openjdk-8-jdk
+# RUN apt-get update && apt-get install -y \
+#      gawk curl git-core diffstat unzip p7zip gcc-multilib g++-multilib \
+#      build-essential chrpath libsdl1.2-dev xterm gperf bison texinfo rename
+# 
+# # B2Qt git-lfs
+# RUN apt-get install -y git-lfs || \
+#      curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && apt-get install -y git-lfs
+# 
+# # Debian
+# RUN apt-get update && apt-get install -y \
+#      binfmt-support qemu qemu-user-static debootstrap kpartx \
+#      lvm2 dosfstools gpart binutils bison git lib32ncurses5-dev libssl-dev gawk wget \
+#      git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat libsdl1.2-dev \
+#      autoconf libtool libglib2.0-dev libarchive-dev xterm sed cvs subversion \
+#      kmod coreutils texi2html bc docbook-utils python-pysqlite2 help2man make gcc g++ \
+#      desktop-file-utils libgl1-mesa-dev libglu1-mesa-dev mercurial automake groff curl \
+#      lzop asciidoc u-boot-tools mtd-utils device-tree-compiler flex \
+#      rsync
+# 
+# # Android
+# RUN apt-get update && apt-get install -y \
+#      gnupg flex bison gperf build-essential zip gcc-multilib g++-multilib \
+#      libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev libz-dev libssl-dev \
+#      libgl1-mesa-dev libxml2-utils xsltproc unzip bc \
+#      uuid uuid-dev zlib1g-dev liblz-dev liblzo2-2 liblzo2-dev lzop git curl \
+#      u-boot-tools mtd-utils android-tools-fsutils device-tree-compiler gdisk m4 \
+#      openjdk-8-jdk
 
 RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /bin/repo && chmod a+rx /bin/repo
 
@@ -85,5 +89,25 @@ RUN apt-get install -y \
 # Update to latest
 RUN apt-get update && apt-get dist-upgrade -y
 
+
+RUN repo init -u https://github.com/roger-gu-tfs/ics-bsp-platform.git -b sumo -m default.xml \
+     && repo sync
+
+WORKDIR ~/
+#TODO download meta-ics
+RUN git clone git@github.com:thermofisher/cic-imx6_mpu-base.git
+
+WORKDIR /workdir
+
+#TODO soft-link meta-ics
+RUN mkdir meta-ics \
+     && ln -s  ~/meta-ics meta-ics
+
+RUN MACHINE=var-som-mx6 DISTRO=fslc-x11 . setup-environment build_jenkins
+
+#revise local.conf, bblayer.conf; use COPY
+
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
+
+USER jenkins

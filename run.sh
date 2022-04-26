@@ -163,6 +163,12 @@ if [ ! -f ${HOME}/.gitconfig ]; then
 fi
 
 docker run --rm -e HOST_USER_ID=$uid -e HOST_USER_GID=$gid \
+    --name thermo_jenkins \ 
+    -p 8080:8080  \
+    -p 50000:50000 \
+    --env JENKINS_SLAVE_AGENT_PORT=50001 \ 
+    -v jenkins_home:/var/jenkins_home \
+    -v /downloads/yocto-downloads:/downloads \
     -v ~/.ssh:/home/vari/.ssh \
     -v ${WORKDIR}:/workdir \
     -v ~/.gitconfig:/home/vari/.gitconfig \

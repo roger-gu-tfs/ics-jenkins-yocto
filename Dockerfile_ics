@@ -94,7 +94,7 @@ RUN repo init -u https://github.com/roger-gu-tfs/ics-bsp-platform.git -b sumo -m
      && repo sync
 
 WORKDIR ~/
-#TODO download meta-ics
+#TODO: download meta-ics
 RUN git clone git@github.com:thermofisher/cic-imx6_mpu-base.git
 
 WORKDIR /workdir

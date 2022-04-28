@@ -2,12 +2,11 @@
 
 This repository provides a Docker container for building Variscite software releases. These configurations have been tested:
 
-|Container Version   | Variscite Release                                                          |
+|Container Version   | ics Release                                                          |
 |--------------------|----------------------------------------------------------------------------|
-| Ubuntu 20.04       | - Yocto Dunfell<br>- Android 10<br>- Debian Bullseye<br>- Boot2Qt Dunfell
-| Ubuntu 18.04       | - Yocto Zeus
-| Ubuntu 16.04       | - Yocto Pyro, Rocko, Sumo, Thud, Warrior
-| Ubuntu 14.04       | - Android 6
+| ics common         | - common base
+| vertumnus          | - for vertumnus
+| karst              | - for karst
 
 # Host Setup
 

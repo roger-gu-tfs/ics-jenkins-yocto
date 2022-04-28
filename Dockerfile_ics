@@ -99,13 +99,13 @@ RUN git clone git@github.com:thermofisher/cic-imx6_mpu-base.git
 
 WORKDIR /workdir
 
-#TODO soft-link meta-ics
+#TODO: soft-link meta-ics
 RUN mkdir meta-ics \
      && ln -s  ~/meta-ics meta-ics
 
 RUN MACHINE=var-som-mx6 DISTRO=fslc-x11 . setup-environment build_jenkins
 
-#revise local.conf, bblayer.conf; use COPY
+#TODO: revise local.conf, bblayer.conf; use COPY
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]

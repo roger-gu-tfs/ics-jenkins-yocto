@@ -29,10 +29,10 @@ You're now running in a container with all build dependencies, and can build as 
 
 Yocto Example:
 ```
-vari@460e5ba862b1:/workdir$ repo init -u https://github.com/varigit/variscite-bsp-platform.git -b refs/tags/dunfell-fslc-5.4-2.1.x-mx8mn-v1.2 -m default.xml
+vari@460e5ba862b1:/workdir$ repo init -u git@github.com:roger-gu-tfs/ics-bsp-platform.git -b vertumnus_0.9.0 -m default.xml
 vari@460e5ba862b1:/workdir$ repo sync -j4
-vari@460e5ba862b1:/workdir$ MACHINE=imx8mn-var-som DISTRO=fslc-xwayland . setup-environment build_xwayland
-vari@460e5ba862b1:/workdir$ bitbake fsl-image-gui
+vari@460e5ba862b1:/workdir$ MACHINE=var-som-mx6 DISTRO=fslc-x11 . setup-environment build_x11
+vari@460e5ba862b1:/workdir$ bitbake vertumnus-fsl-image
 ```
 ## Docker Privileged Mode (Debian)
 

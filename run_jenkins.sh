@@ -21,7 +21,7 @@ build_image() {
     DOCKERFILE="$1"
     if [ ! -f "${DIR_SCRIPT}/${DOCKERFILE}" ]; then
         echo "${DIR_SCRIPT}/${DOCKERFILE} not found"
-        exit -1
+         -1
     fi
     docker build ${BUILD_CACHE} -t "variscite:${DOCKER_IMAGE}" ${DIR_SCRIPT} -f ${DOCKERFILE}
 }
@@ -47,7 +47,7 @@ help() {
     echo " -b --build               Build Docker Image, includes only changes made to Dockerfile"
     echo " -f --force-build         Build Docker Image with --no-cache, will include latest from Ubuntu"
     echo " -e --env                 Docker Environment File"
-    echo " -n --non-interactive     Run container and exit without interactive shell"
+    echo " -n --non-interactive     Run container and  without interactive shell"
     echo " -w --workdir             Docker Working Directory to Mount, default is ${WORKDIR}"
     echo " -v --volume              Docker Volumes to Mount, e.g. -v /opt/yocto_downloads_docker:/opt/yocto_downloads -v /opt/yocto_sstate_docker:/opt/yocto_sstate"
     echo " -p --privledged          Run docker in privledged mode, allowing access to all devices"
@@ -62,7 +62,7 @@ help() {
     echo "Example - Run Interactive Shell In Another Directory, mounting directories inside Docker container"
     echo "./run.sh -w ~/var-fslc-yocto -v /opt/yocto_downloads_docker:/opt/yocto_downloads -v /opt/yocto_sstate_docker:/opt/yocto_sstate"
     echo
-    exit
+    
 }
 
 parse_args() {
@@ -99,7 +99,7 @@ parse_args() {
                     echo "Error: ${WORKDIR} doesn't exist"
                     echo "Please verify path and run:"
                     echo "mkdir -p ${WORKDIR}"
-                    exit -1
+                     -1
                 fi
                 shift # past argument
                 shift # past value
@@ -143,7 +143,7 @@ readonly DOCKER_IMAGE="yocto-${UBUNTU_VERSION}-${GIT_COMMIT}"
 # Verify qemu-user-static is is installed
 if [ ! -f /usr/bin/qemu-aarch64-static ]; then
     echo "Error: Please install qemu-user-static on host, required for debian"
-    exit -1
+     -1
 fi
 
 # Build container
@@ -159,7 +159,7 @@ if [ ! -f ${HOME}/.gitconfig ]; then
     echo "Error: Please create ${HOME}/.gitconfig on your host computer:"
     echo '    $ git config --global user.email "you@example.com"'
     echo '    $ git config --global user.name "Your Name"'
-    exit -1
+     -1
 fi
 
 docker run --rm -e HOST_USER_ID=$uid -e HOST_USER_GID=$gid \

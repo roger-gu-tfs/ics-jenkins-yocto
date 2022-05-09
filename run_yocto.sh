@@ -165,6 +165,7 @@ fi
 docker run --rm -e HOST_USER_ID=$uid -e HOST_USER_GID=$gid \
     -v ~/.ssh:/home/vari/.ssh \
     -v ${WORKDIR}:/workdir \
+    -v /opt/yocto_shared:/opt/yocto_sumo_shared \
     -v ~/.gitconfig:/home/vari/.gitconfig \
     -v /usr/src:/usr/src \
     -v /lib/modules:/lib/modules \

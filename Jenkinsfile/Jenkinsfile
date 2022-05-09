@@ -1,0 +1,154 @@
+// Declarative //
+pipeline {
+    agent any 
+
+    options {
+        buildDiscarder logRotator( 
+            daysToKeepStr: '7', 
+            numToKeepStr: '10'
+        )
+    }
+
+    environment {
+        mpu_version = "0.9.0"
+        dest_ip = "10.68.178.94"
+        target_file_name = "vertumnus-fsl-image-swu-var-som-mx6.swu"
+        BRANCH_NAME = "${GIT_BRANCH.split('/').size() > 1 ? GIT_BRANCH.split('/')[1..-1].join('/') : GIT_BRANCH}"
+        version_info = "${mpu_version}_t${BUILD_TIMESTAMP}_g${GIT_COMMIT}_b${BRANCH_NAME}"        
+    }
+
+    stages {
+        stage('Build') { 
+            	  
+            steps { 
+                //sh "if [ ! -e var-fslc-yocto ]; then ln -s /home/roger/workspace/yocto-sumo-imx6/var-fslc-yocto var-fslc-yocto;fi"
+
+                echo 'Pulling...' + env.BRANCH_NAME
+                echo 'version is ...' + env.version_info               
+                
+                sh "bash construct.sh ${env.BRANCH_NAME} ${env.version_info} build_x11 vertumnus"
+                //sh "bash ThirdParty/meta-ics/meta-vertumnus/Jenkinsfile/construct.sh ${env.BRANCH_NAME} ${env.version_info} build_x11 vertumnus"
+            }
+
+
+            post {
+                success {
+                    archiveArtifacts (
+                        artifacts: "var-fslc-yocto/build_jenkins/tmp/deploy/images/var-som-mx6/*",
+                        onlyIfSuccessful: true
+                    )
+
+                    stash (
+                        includes: 'var-fslc-yocto/build_jenkins/tmp/deploy/images/var-som-mx6/vertumnus-fsl-image-swu-var-som-mx6.swu',
+                        name: 'ReleaseBin',
+                    )
+				}
+			}
+        }       
+        stage('Deploy') {
+
+            when {
+                beforeAgent true
+                allOf {
+                    anyOf {
+                        branch 'feature/*'
+                        branch 'master'
+                        branch 'release/*'
+                        changeRequest target: 'master'
+                        changeRequest target: "feature/\\w+", comparator: 'REGEXP'
+                        changeRequest target: "release/\\w+", comparator: 'REGEXP'
+                    }
+                    expression { false }  //skip this stage
+                }
+			}           
+            
+            steps {
+                echo 'echo Deploy stage ...' 
+                unstash 'ReleaseBin'	
+
+
+                sh "bash ThirdParty/meta-ics/meta-vertumnus/Jenkinsfile/deploy.sh ${env.dest_ip} ${env.target_file_name} build_jenkins"
+                //sh 'make publish'
+            }   
+        }
+        stage('Test'){
+            when {
+                beforeAgent true
+
+                allOf {
+                    anyOf {
+                        branch 'feature/*'
+                        branch 'master'
+                        branch 'release/*'
+                        changeRequest target: 'master'
+                        changeRequest target: "feature/\\w+", comparator: 'REGEXP'
+                        changeRequest target: "release/\\w+", comparator: 'REGEXP'
+                    }
+                    expression { false }  //skip this stage
+                }
+			}
+
+            steps {
+                echo 'echo Test stage ...' 
+                sh "bash ThirdParty/meta-ics/meta-vertumnus/Jenkinsfile/test_board.sh"
+
+                echo 'echo Test stage finished' 
+            }
+
+            post {
+                always{
+                    script {
+                    //allure includeProperties: false, jdk: '', report: 'application/Rainbow/CodeGenerator/pytest/report', results: [[path: 'result']]
+                    //allure includeProperties: false, jdk: '', report: 'application/Rainbow/CodeGenerator/pytest/report', results: [[path: 'application\\Rainbow\\CodeGenerator\\pytest\\report']]	
+
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        report: 'pytest/allure-report', // note: report and results shall in same folder
+                        results: [[path: 'target/allure-results']]
+                        ])
+
+                    }
+				}
+			}
+        }
+        stage('Publish') {
+            when {
+                beforeAgent true				
+                anyOf {
+                //   branch 'feature/*'
+                    branch 'master'
+                    branch 'release/*'
+                    changeRequest target: 'master'
+                //   changeRequest target: "feature/\\w+", comparator: 'REGEXP'
+                    changeRequest target: "release/\\w+", comparator: 'REGEXP'
+                }
+                }
+
+                steps {					
+                    sh "echo Publish stage ..."
+                    unstash 'ReleaseBin'
+                }
+
+                post {
+                        success {
+                            archiveArtifacts (
+                                artifacts: 'var-fslc-yocto/build_jenkins/tmp/deploy/images/var-som-mx6/vertumnus-fsl-image-swu-var-som-mx6.swu',
+                                onlyIfSuccessful: true
+                            )
+                        }
+                }
+        }
+    }
+
+    post {
+        always {
+            emailext body: 'Vertumnus Jenkins build Message ' + env.BUILD_URL, 
+            subject: currentBuild.result + ': ' + env.BRANCH_NAME + ' - BuildNr: ' + env.BUILD_NUMBER,
+            // to: 'chao.gong@thermofisher.com',
+            recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+        }
+    }
+}

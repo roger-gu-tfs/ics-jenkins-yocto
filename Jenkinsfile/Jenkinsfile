@@ -26,7 +26,7 @@ pipeline {
                 echo 'Pulling...' + env.BRANCH_NAME
                 echo 'version is ...' + env.version_info               
                 
-                sh "bash construct.sh ${env.BRANCH_NAME} ${env.version_info} build_x11 vertumnus"
+                sh "bash Jenkinsfile/construct.sh ${env.BRANCH_NAME} ${env.version_info} build_x11 vertumnus"
                 //sh "bash ThirdParty/meta-ics/meta-vertumnus/Jenkinsfile/construct.sh ${env.BRANCH_NAME} ${env.version_info} build_x11 vertumnus"
             }
 

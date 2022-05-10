@@ -9,7 +9,10 @@ services:
     volumes:
       - /home/thermo/WorkDir/VerProj/jenkins_home:/var/jenkins_home/
   yocto:
-    build: .
+    build: 
+      context: ./
+      dockerfile: Dockerfile_16.04
+    image: ics/vertumnus-yocto
     container_name: yocto-sumo
     #ports:
     #  - "5000:5000"

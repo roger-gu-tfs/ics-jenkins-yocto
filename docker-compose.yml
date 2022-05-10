@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  jenkins:
+    image: "jenkins/jenkins:2.319.1-lts"
+    container_name: jenkins
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - /home/thermo/WorkDir/VerProj/jenkins_home:/var/jenkins_home/
+  yocto:
+    build: .
+    container_name: yocto-sumo
+    #ports:
+    #  - "5000:5000"
+    privileged: true
+    volumes:
+       - ~/.ssh:/home/vari/.ssh
+       - ~/.gitconfig:/home/vari/.gitconfig
+       - /usr/src:/usr/src
+       - /lib/modules:/lib/modules
+       - /linux-kernel:/linux-kernel
+       - ~/WorkDir/VerProj/yocto_build:/workdir/
+       - /opt/yocto_shared:/opt/yocto_sumo_shared
+    environment:
+      - yocto_dl=/opt/yocto_shared
+      - HOST_USER_GID=vari
+      - HOST_USER_GID=vari
+    #entrypoint: ["/usr/sbin/init"]
+      
+volumes:
+  logvolume01: {}

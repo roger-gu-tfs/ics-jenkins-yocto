@@ -21,6 +21,8 @@ cd /home/thermo/WorkDir/VerProj/yocto_build/
 #git stash save temp
 #git checkout -b $branch_name origin/$branch_name;
 
+
+#TODO: ssh yocto docker
 #update bb file
 echo "upgrade bb file"
 cd sources/meta-ics/meta-$project/recipes-app

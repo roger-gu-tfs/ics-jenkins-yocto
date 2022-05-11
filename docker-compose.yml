@@ -10,16 +10,16 @@ services:
       - /home/thermo/WorkDir/VerProj/jenkins_home:/var/jenkins_home/
   yocto:
     build: 
-      context: ./
-      dockerfile: Dockerfile_16.04
+      context: ./Dockerfile
+      dockerfile: Dockerfile_vertumnus_yocto
     image: ics/vertumnus-yocto
     container_name: yocto-sumo
     #ports:
     #  - "5000:5000"
     privileged: true
     volumes:
-       - ~/.ssh:/home/vari/.ssh
-       - ~/.gitconfig:/home/vari/.gitconfig
+       - ~/.ssh:/home/ics/.ssh
+       - ~/.gitconfig:/home/ics/.gitconfig
        - /usr/src:/usr/src
        - /lib/modules:/lib/modules
        - /linux-kernel:/linux-kernel
@@ -27,8 +27,8 @@ services:
        - /opt/yocto_shared:/opt/yocto_sumo_shared
     environment:
       - yocto_dl=/opt/yocto_shared
-      - HOST_USER_GID=vari
-      - HOST_USER_GID=vari
+      - HOST_USER_GID=ics
+      - HOST_USER_GID=ics
     #entrypoint: ["/usr/sbin/init"]    
   portainer:
     image: portainer/portainer-ce:latest

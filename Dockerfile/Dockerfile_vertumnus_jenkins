@@ -1,7 +1,7 @@
 FROM jenkins/jenkins:2.319.1-lts
 # if we want to install via apt
 USER root
-RUN echo "linuxpassword" | passwd --stdin linuxuser
+#RUN echo -e "123456\n123456" | passwd jenkins
 RUN apt-get update && apt-get install -y vim inetutils-ping net-tools
 # drop back to the regular jenkins user - good practice
 USER jenkins

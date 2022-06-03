@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  jenkins:
+    build: 
+      context: ./Dockerfile
+      dockerfile: Dockerfile_vertumnus_jenkins
+    image: ics/vertumnus-jenkins
+    container_name: jenkins
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - /home/thermo/WorkDir/VerProj/jenkins_home:/var/jenkins_home/

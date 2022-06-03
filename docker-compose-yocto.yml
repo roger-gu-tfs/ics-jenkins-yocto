@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  yocto:
+    build: 
+      context: ./Dockerfile
+      dockerfile: Dockerfile_vertumnus_yocto
+    image: ics/vertumnus-yocto
+    container_name: yocto-sumo
+    #ports:
+    #  - "5000:5000"
+    privileged: true
+    volumes:
+       - ~/.ssh:/home/ics/.ssh
+       - ~/.gitconfig:/home/ics/.gitconfig
+       - /usr/src:/usr/src
+       - /lib/modules:/lib/modules
+       - /linux-kernel:/linux-kernel
+       - ~/WorkDir/VerProj/yocto_build:/workdir/
+       - /opt/yocto_shared:/opt/yocto_sumo_shared
+    environment:
+      - yocto_dl=/opt/yocto_shared
+      - HOST_USER_GID=ics
+      - HOST_USER_GID=ics
+    #entrypoint: ["/usr/sbin/init"]    

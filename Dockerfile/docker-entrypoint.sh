@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 # Copyright 2021 Variscite Ltd.
 
+#sshd restart
+service ssh start && bash
+
 # verify container user was set in dockerfile
 if [ -z "${USER}" ]; then
   echo "Set user in Dockerfile";

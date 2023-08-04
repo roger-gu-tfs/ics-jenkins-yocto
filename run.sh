@@ -8,7 +8,7 @@ readonly GIT_COMMIT="$(git --git-dir=${DIR_SCRIPT}/.git log -1 --format=%h)"
 
 cd ${DIR_SCRIPT}
 
-UBUNTU_VERSIONS_SUPPORTED=("20.04" "18.04" "16.04" "14.04")
+UBUNTU_VERSIONS_SUPPORTED=("22.04" "20.04" "18.04" "16.04" "14.04")
 UBUNTU_VERSION="20.04"
 WORKDIR=$(pwd)
 SCRIPT=""
@@ -74,7 +74,7 @@ parse_args() {
             -u|--ubuntu-version)
                 UBUNTU_VERSION="$2"
                 # Verify Ubuntu Version is Supported
-                array_contains "${UBUNTU_VERSION}" "${UBUNTU_VERSIONS_SUPPORTED[@]}" || echo "Error, Ubuntu '${UBUNTU_VERSION}' not supported, use one of: ${UBUNTU_VERSIONS_SUPPORTED[@]}";
+                array_contains "${UBUNTU_VERSION}" "${UBUNTU_VERSIONS_SUPPORTED[@]}" || ( echo "Error, Ubuntu '${UBUNTU_VERSION}' not supported, use one of: ${UBUNTU_VERSIONS_SUPPORTED[@]}"; exit 1);
                 shift
                 shift
             ;;
@@ -171,7 +171,7 @@ docker run --rm -e HOST_USER_ID=$uid -e HOST_USER_GID=$gid \
     -v /downloads/yocto-downloads:/downloads \
     -v ~/.ssh:/home/vari/.ssh \
     -v ${WORKDIR}:/workdir \
-    -v ~/.gitconfig:/home/vari/.gitconfig \
+    -v ~/.gitconfig:/tmp/host_gitconfig \
     -v /usr/src:/usr/src \
     -v /lib/modules:/lib/modules \
     -v /linux-kernel:/linux-kernel \

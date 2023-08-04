@@ -63,7 +63,7 @@ RUN apt-get update && apt-get install -y \
      kmod coreutils texi2html bc docbook-utils python-pysqlite2 help2man make gcc g++ \
      desktop-file-utils libgl1-mesa-dev libglu1-mesa-dev mercurial automake groff curl \
      lzop asciidoc u-boot-tools mtd-utils device-tree-compiler flex \
-     rsync
+     rsync cmake
 
 # Android
 RUN apt-get update && apt-get install -y \
@@ -76,8 +76,16 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /bin/repo && chmod a+rx /bin/repo
 
+# Install development utilities
+RUN apt-get update && apt-get install -y \
+     vim tmux
+
 # Update to latest
 RUN apt-get update && apt-get dist-upgrade -y
+
+# make /bin/sh symlink to bash instead of dash:
+RUN echo "dash dash/sh boolean false" | debconf-set-selections
+RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
